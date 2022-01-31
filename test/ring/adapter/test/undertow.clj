@@ -159,8 +159,9 @@
                                  (swap! events conj :open))
                    :on-message (fn [{:keys [data]}]
                                  (swap! events conj data))
-                   :on-close   (fn [_]
+                   :on-close   (fn [{:keys [ws-channel]}]
                                  (println "server on-close")
+                                 (.sendClose ws-channel)
                                  (deliver result (swap! events conj :close)))}]
       (with-server (websocket-handler ws-opts) {:port test-port}
         (let [socket (proxy [WebSocketClient] [(java.net.URI. "ws://localhost:4347/")]
